@@ -63,8 +63,12 @@ Slider sliders[] = new Slider[]
 
 Button randomizeButton = new Button(10, 330, 100, 40, "Randomize");
 Button resetButton = new Button(10, 380, 100, 40, "Reset");
+Button visualizeButton = new Button(10, 430, 100, 40, "Visualize");
 
 boolean mouseDown = false;
+boolean visualize = false;
+
+float visualizeScale = 3;
 
 //==========================================SETUP======================================
 void setup()
@@ -97,6 +101,7 @@ void draw()
 {
   //alpha over screen
   fill(0, 0, 0, 25.5);
+  noStroke();
   rect(-10, -10, width+10, height+10);
 
   //set trail path to trail buffer
@@ -184,14 +189,23 @@ void draw()
         sliders[6].SetValue(0.25);
         sliders[7].SetValue(0.7);
       }
+      if (visualizeButton.OnButton())
+      {
+        visualize = !visualize;
+      }
     }
   } else
   {
     mouseDown = false;
   }
 
+  VisualizeAgent();
+
+  stroke(255);
+  fill(255);
   randomizeButton.Show();
   resetButton.Show();
+  visualizeButton.Show();
 }
 
 void DecayBuffer()
@@ -275,5 +289,68 @@ void DiffuseBuffer()
 
       trailBuffer[x][y] = sum/NBCount;//average of neighbours;
     }
+  }
+}
+
+void VisualizeAgent()
+{
+  if (visualize)
+  {
+    fill(255);
+    strokeWeight(1);
+
+    //main body
+    float hw = width/2;
+    float hh = height/2;
+    circle(hw, hh, cellSize*visualizeScale);
+
+    //movespeed
+    stroke(70, 255, 255);
+    strokeWeight(4);
+
+    line(hw, hh, hw, hh-depositionAmount * visualizeScale * 3);
+    
+    //rotation angle lines
+    strokeWeight(1);
+    stroke(160,255,255);
+    float rlx = sin(radians(180-rotationAngle))*visualizeScale * 30;
+    float rly = cos(radians(180-rotationAngle))*visualizeScale * 30;
+    float rrx = sin(radians(180+rotationAngle))*visualizeScale * 30;
+    float rry = cos(radians(180+rotationAngle))*visualizeScale * 30;
+    line(hw,hh,hw+rlx,hh+rly);
+    line(hw,hh,hw+rrx,hh+rry);
+    
+    //random angle lines
+    strokeWeight(1);
+    stroke(16,255,255);
+    float ralx = sin(radians(180-randomAngleAdd))*visualizeScale * 20;
+    float raly = cos(radians(180-randomAngleAdd))*visualizeScale * 20;
+    float rarx = sin(radians(180+randomAngleAdd))*visualizeScale * 20;
+    float rary = cos(radians(180+randomAngleAdd))*visualizeScale * 20;
+    
+    line(hw,hh,hw+ralx,hh+raly);
+    line(hw,hh,hw+rarx,hh+rary);
+
+    //sensors
+    fill(255, 255, 150);
+    strokeWeight(1);
+    stroke(255);
+    float slx = sin(radians(180-sensorAngle))*sensorDistance*visualizeScale;
+    float sly = cos(radians(180-sensorAngle))*sensorDistance*visualizeScale;
+    float smx = sin(radians(180))*sensorDistance*visualizeScale;
+    float smy = cos(radians(180))*sensorDistance*visualizeScale;
+    float srx = sin(radians(180+sensorAngle))*sensorDistance*visualizeScale;
+    float sry = cos(radians(180+sensorAngle))*sensorDistance*visualizeScale;
+    circle(hw+slx, hh+sly, sensorSize*visualizeScale);
+    circle(hw+smx, hh+smy, sensorSize*visualizeScale);
+    circle(hw+srx, hh+sry, sensorSize*visualizeScale);
+
+    //sensor lines
+    stroke(0, 255, 255);
+    strokeWeight(1);
+
+    line(hw, hh, hw+slx, hh+sly);
+    line(hw, hh, hw+smx, hh+smy);
+    line(hw, hh, hw+srx, hh+sry);
   }
 }
