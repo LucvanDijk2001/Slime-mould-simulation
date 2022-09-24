@@ -52,13 +52,13 @@ float c = 0;
 Slider sliders[] = new Slider[]
   {
   new Slider(0, 1, 10, 30, 100, "decay factor"), 
-  new Slider(1, 5, 10, 70, 100, "cell size"), 
+  new Slider(1, 10, 10, 70, 100, "cell size"), 
   new Slider(1, 100, 10, 110, 100, "sensor distance"), 
   new Slider(1, 10, 10, 150, 100, "sensor size", true), 
   new Slider(10, 135, 10, 190, 100, "sensor angle"), 
   new Slider(0, 20, 10, 230, 100, "rotation angle"), 
   new Slider(0, 20, 10, 270, 100, "random angle add"), 
-  new Slider(0, 2, 10, 310, 100, "cell move speed")
+  new Slider(0, 5, 10, 310, 100, "cell move speed")
 };
 
 Button randomizeButton = new Button(10, 330, 100, 40, "Randomize");
@@ -83,11 +83,11 @@ void setup()
 
   //set initial slider values
   sliders[0].SetValue(0.01);
-  sliders[1].SetValue(0.3);
+  sliders[1].SetValue(0.4);
   sliders[2].SetValue(0.09);
   sliders[3].SetValue(0.2);
   sliders[4].SetValue(0.28);
-  sliders[5].SetValue(0.3);
+  sliders[5].SetValue(0.8);
   sliders[6].SetValue(0.25);
   sliders[7].SetValue(0.7);
 }

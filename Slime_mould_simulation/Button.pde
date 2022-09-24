@@ -17,7 +17,7 @@ class Button
     strokeWeight(3);
     textAlign(CENTER);
     rect(x,y,w,h);
-    text(t,x+w/2,y+h/2);
+    text(t,x+w/2,y+h/2+5);
   }
   
   boolean OnButton()
