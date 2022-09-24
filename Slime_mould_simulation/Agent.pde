@@ -8,9 +8,10 @@ class SlimeAgent
 
   float direction = random(360);//heading direction of the particle
   //PVector position = new PVector(random(0,width),random(0,height)); //position of the particle
-  PVector position = new PVector(random(50,550), random(50,550));
+  PVector position = new PVector(random(50, 550), random(50, 550));
   PVector sensors[] = new PVector[3]; //particle sensors, sensor readings effect heading of particle (turning left/right or going straight ahead)
   float sensorReadings[] = new float[]{0, 0, 0};
+  float c = random(0, 50);
 
   SlimeAgent()
   {
@@ -61,7 +62,7 @@ class SlimeAgent
       rotationAdd += rotationAngle;
       break;
     }
-    rotationAdd += random(-randomAngleAdd,randomAngleAdd);
+    rotationAdd += random(-randomAngleAdd, randomAngleAdd);
     direction += rotationAdd;
 
     //add to position using new direction
@@ -85,6 +86,12 @@ class SlimeAgent
 
   void Show()
   {
+    c++;
+    while (c > 255)
+    {
+      c-= 255;
+    }
+    fill(c, 200, 160, 25.5);
     //draw pixel
     circle(position.x, position.y, cellSize);
   }
@@ -150,11 +157,10 @@ class SlimeAgent
 
   SENSORDIRECTIONS GetDirection()
   {
-    if(sensorReadings[0] == sensorReadings[1] && sensorReadings[0] == sensorReadings[2])
+    if (sensorReadings[0] == sensorReadings[1] && sensorReadings[0] == sensorReadings[2])
     {
       return SENSORDIRECTIONS.SENSORDIRECTIONMIDDLE;
-    }
-    else if (sensorReadings[0] > sensorReadings[1] && sensorReadings[0] == sensorReadings[1])
+    } else if (sensorReadings[0] > sensorReadings[1] && sensorReadings[0] == sensorReadings[1])
     {
       return SENSORDIRECTIONS.SENSORDIRECTIONMIDDLE;
     } else if (sensorReadings[0] > sensorReadings[1] && sensorReadings[0] > sensorReadings[2])

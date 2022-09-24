@@ -62,6 +62,7 @@ Slider sliders[] = new Slider[]
 };
 
 Button randomizeButton = new Button(10, 330, 100, 40, "Randomize");
+Button resetButton = new Button(10, 380, 100, 40, "Reset");
 
 boolean mouseDown = false;
 
@@ -129,12 +130,6 @@ void draw()
   DecayBuffer();
 
   noStroke();
-  c++;
-  while (c > 255)
-  {
-    c-= 255;
-  }
-  fill(c, 200, 160, 25.5);
   //show agents
   p.Show();
 
@@ -172,10 +167,22 @@ void draw()
       mouseDown = true; 
       if (randomizeButton.OnButton())
       {
-        for (int i = 1; i < sliders.length; i++)
+        for (int i = 2; i < sliders.length; i++)
         {
           sliders[i].SetValue(random(0, 1));
         }
+      }
+      if (resetButton.OnButton())
+      {
+        //set initial slider values
+        sliders[0].SetValue(0.01);
+        sliders[1].SetValue(0.4);
+        sliders[2].SetValue(0.09);
+        sliders[3].SetValue(0.2);
+        sliders[4].SetValue(0.28);
+        sliders[5].SetValue(0.8);
+        sliders[6].SetValue(0.25);
+        sliders[7].SetValue(0.7);
       }
     }
   } else
@@ -184,6 +191,7 @@ void draw()
   }
 
   randomizeButton.Show();
+  resetButton.Show();
 }
 
 void DecayBuffer()
