@@ -63,7 +63,8 @@ Slider sliders[] = new Slider[]
 
 Button randomizeButton = new Button(10, 330, 100, 40, "Randomize");
 Button resetButton = new Button(10, 380, 100, 40, "Reset");
-Button visualizeButton = new Button(10, 430, 100, 40, "Visualize");
+Button visualizeButton = new Button(10, 430, 100, 40, "Visualize agent");
+Button visualizeTrails = new Button(10, 480, 100, 40, "Show trails");
 
 boolean mouseDown = false;
 boolean visualize = false;
@@ -138,17 +139,6 @@ void draw()
   //show agents
   p.Show();
 
-  //show trailmap
-  /*
-  for(int i = 0; i < width; i++)
-   {
-   for(int j = 0; j < height; j++)
-   {
-   circle(i,j,trailMap[i][j] * 5);
-   }
-   }
-   */
-
   //update slider values
   decayFactor =      sliders[0].currentVal;
   cellSize =         sliders[1].currentVal;
@@ -194,6 +184,17 @@ void draw()
         visualize = !visualize;
       }
     }
+    if (visualizeTrails.OnButton())
+    {
+      for (int i = 0; i < width; i++)
+      {
+        for (int j = 0; j < height; j++)
+        {
+          color col = color(255,0,trailBuffer[i][j]*255);
+          set(i,j,col);
+        }
+      }
+    }
   } else
   {
     mouseDown = false;
@@ -206,6 +207,7 @@ void draw()
   randomizeButton.Show();
   resetButton.Show();
   visualizeButton.Show();
+  visualizeTrails.Show();
 }
 
 void DecayBuffer()
@@ -309,27 +311,27 @@ void VisualizeAgent()
     strokeWeight(4);
 
     line(hw, hh, hw, hh-depositionAmount * visualizeScale * 3);
-    
+
     //rotation angle lines
     strokeWeight(1);
-    stroke(160,255,255);
+    stroke(160, 255, 255);
     float rlx = sin(radians(180-rotationAngle))*visualizeScale * 30;
     float rly = cos(radians(180-rotationAngle))*visualizeScale * 30;
     float rrx = sin(radians(180+rotationAngle))*visualizeScale * 30;
     float rry = cos(radians(180+rotationAngle))*visualizeScale * 30;
-    line(hw,hh,hw+rlx,hh+rly);
-    line(hw,hh,hw+rrx,hh+rry);
-    
+    line(hw, hh, hw+rlx, hh+rly);
+    line(hw, hh, hw+rrx, hh+rry);
+
     //random angle lines
     strokeWeight(1);
-    stroke(16,255,255);
+    stroke(16, 255, 255);
     float ralx = sin(radians(180-randomAngleAdd))*visualizeScale * 20;
     float raly = cos(radians(180-randomAngleAdd))*visualizeScale * 20;
     float rarx = sin(radians(180+randomAngleAdd))*visualizeScale * 20;
     float rary = cos(radians(180+randomAngleAdd))*visualizeScale * 20;
-    
-    line(hw,hh,hw+ralx,hh+raly);
-    line(hw,hh,hw+rarx,hh+rary);
+
+    line(hw, hh, hw+ralx, hh+raly);
+    line(hw, hh, hw+rarx, hh+rary);
 
     //sensors
     fill(255, 255, 150);
