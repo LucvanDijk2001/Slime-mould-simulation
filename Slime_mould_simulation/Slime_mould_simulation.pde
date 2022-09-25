@@ -38,7 +38,7 @@ float trailMap[][];
 float trailBuffer[][];
 
 //program properties
-float decayFactor =0.01;
+float decayFactor =0.9;
 float cellSize = 2;
 float sensorDistance = 9;
 int sensorSize = 2;
@@ -46,6 +46,9 @@ float sensorAngle = 45;
 float rotationAngle = 6;
 float randomAngleAdd = 5;
 float depositionAmount = 0.5;
+
+float trailDepositValue = 0.3;
+int depositSize = 1;
 
 float c = 0;
 
@@ -56,15 +59,18 @@ Slider sliders[] = new Slider[]
   new Slider(1, 100, 10, 110, 100, "sensor distance"), 
   new Slider(1, 10, 10, 150, 100, "sensor size", true), 
   new Slider(10, 135, 10, 190, 100, "sensor angle"), 
-  new Slider(0, 20, 10, 230, 100, "rotation angle"), 
+  new Slider(0, 40, 10, 230, 100, "rotation angle"), 
   new Slider(0, 20, 10, 270, 100, "random angle add"), 
-  new Slider(0, 5, 10, 310, 100, "cell move speed")
+  new Slider(0, 10, 10, 310, 100, "cell move speed"),
+  
+  new Slider(0, 1, 10, 350, 100, "pheromone amount"),
+  new Slider(0, 5, 10, 390, 100, "deposit size",true)
 };
 
-Button randomizeButton = new Button(10, 330, 100, 40, "Randomize");
-Button resetButton = new Button(10, 380, 100, 40, "Reset");
-Button visualizeButton = new Button(10, 430, 100, 40, "Visualize agent");
-Button visualizeTrails = new Button(10, 480, 100, 40, "Show trails");
+Button randomizeButton = new Button(10, 410, 100, 40, "Randomize");
+Button resetButton = new Button(10, 460, 100, 40, "Reset");
+Button visualizeButton = new Button(10, 510, 100, 40, "Visualize agent");
+Button visualizeTrails = new Button(10, 560, 100, 40, "Show trails");
 
 boolean mouseDown = false;
 boolean visualize = false;
@@ -75,7 +81,7 @@ float visualizeScale = 3;
 void setup()
 {
   //create canvas
-  size(600, 600);
+  size(900, 600);
   background(0);
   colorMode(HSB);
   noStroke();
@@ -88,14 +94,16 @@ void setup()
   p = new Population(agentAmount);
 
   //set initial slider values
-  sliders[0].SetValue(0.01);
+  sliders[0].SetValue(0.9);
   sliders[1].SetValue(0.4);
   sliders[2].SetValue(0.09);
   sliders[3].SetValue(0.2);
   sliders[4].SetValue(0.28);
-  sliders[5].SetValue(0.8);
+  sliders[5].SetValue(0.4);
   sliders[6].SetValue(0.25);
-  sliders[7].SetValue(0.7);
+  sliders[7].SetValue(0.35);
+  sliders[8].SetValue(0.8);
+  sliders[9].SetValue(0.2);
 }
 
 void draw()
@@ -140,14 +148,16 @@ void draw()
   p.Show();
 
   //update slider values
-  decayFactor =      sliders[0].currentVal;
-  cellSize =         sliders[1].currentVal;
-  sensorDistance =   sliders[2].currentVal;
-  sensorSize =  (int)sliders[3].currentVal;
-  sensorAngle =      sliders[4].currentVal;
-  rotationAngle =    sliders[5].currentVal;
-  randomAngleAdd =   sliders[6].currentVal;
-  depositionAmount = sliders[7].currentVal;
+  decayFactor =       sliders[0].currentVal;
+  cellSize =          sliders[1].currentVal;
+  sensorDistance =    sliders[2].currentVal;
+  sensorSize =   (int)sliders[3].currentVal;
+  sensorAngle =       sliders[4].currentVal;
+  rotationAngle =     sliders[5].currentVal;
+  randomAngleAdd =    sliders[6].currentVal;
+  depositionAmount =  sliders[7].currentVal;
+  trailDepositValue = sliders[8].currentVal;
+  depositSize =  (int)sliders[9].currentVal;
 
   for (int i = 0; i < sliders.length; i++)
   {
@@ -162,7 +172,7 @@ void draw()
       mouseDown = true; 
       if (randomizeButton.OnButton())
       {
-        for (int i = 2; i < sliders.length; i++)
+        for (int i = 2; i < sliders.length-1; i++)
         {
           sliders[i].SetValue(random(0, 1));
         }
@@ -170,14 +180,16 @@ void draw()
       if (resetButton.OnButton())
       {
         //set initial slider values
-        sliders[0].SetValue(0.01);
+        sliders[0].SetValue(0.9);
         sliders[1].SetValue(0.4);
         sliders[2].SetValue(0.09);
         sliders[3].SetValue(0.2);
         sliders[4].SetValue(0.28);
-        sliders[5].SetValue(0.8);
+        sliders[5].SetValue(0.4);
         sliders[6].SetValue(0.25);
-        sliders[7].SetValue(0.7);
+        sliders[7].SetValue(0.35);
+        sliders[8].SetValue(0.8);
+        sliders[9].SetValue(0.2);
       }
       if (visualizeButton.OnButton())
       {
@@ -190,8 +202,8 @@ void draw()
       {
         for (int j = 0; j < height; j++)
         {
-          color col = color(255,0,trailBuffer[i][j]*255);
-          set(i,j,col);
+          color col = color(255, 0, trailBuffer[i][j]*255);
+          set(i, j, col);
         }
       }
     }
@@ -216,7 +228,7 @@ void DecayBuffer()
   {
     for (int y = 0; y < height; y++)
     {
-      trailBuffer[x][y] -= decayFactor;
+      trailBuffer[x][y] -= decayFactor/50;
       trailBuffer[x][y] = constrain(trailBuffer[x][y], 0, 1);
     }
   }
@@ -240,6 +252,7 @@ void DiffuseBuffer()
       //get num neightbours and add to sum
       float sum = 0;
       int NBCount = 1; //1 because it includes self;
+      sum += bufferBuffer[x][y];
 
       //left
       if (x > 0) {

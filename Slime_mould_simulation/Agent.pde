@@ -6,12 +6,13 @@ class SlimeAgent
    - deposit size (how much trail value is left behind)
    */
 
-  float direction = random(360);//heading direction of the particle
+
   //PVector position = new PVector(random(0,width),random(0,height)); //position of the particle
-  PVector position = new PVector(random(50, 550), random(50, 550));
+  PVector position = new PVector(width/2, height/2);
   PVector sensors[] = new PVector[3]; //particle sensors, sensor readings effect heading of particle (turning left/right or going straight ahead)
   float sensorReadings[] = new float[]{0, 0, 0};
   float c = random(0, 50);
+  float direction = random(360);
 
   SlimeAgent()
   {
@@ -73,11 +74,17 @@ class SlimeAgent
     ClampPosition();
 
     //deposit trail based on deposit size
-    int tx = (int)position.x;
-    int ty = (int)position.y;
-    if (tx >= 0 && tx < width && ty >= 0 && ty < height)
+    for (int i = -depositSize; i < depositSize; i++)
     {
-      trailBuffer[(int)position.x][(int)position.y] += depositionAmount;
+      for (int j = -depositSize; j < depositSize; j++)
+      {
+        int tx = (int)position.x+i;
+        int ty = (int)position.y+j;
+        if (tx >= 0 && tx < width && ty >= 0 && ty < height)
+        {
+          trailBuffer[tx][ty] += trailDepositValue;
+        }
+      }
     }
 
     //recalculate sensor positions
